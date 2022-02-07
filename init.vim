@@ -135,7 +135,7 @@ map <leader>tm :botright vsp term://zsh<CR>
 " Appearance
 "------------------------------------
 
-set colorcolumn=80
+set colorcolumn=100
 highlight ColorColumn ctermbg=darkgrey
 syntax on
 
