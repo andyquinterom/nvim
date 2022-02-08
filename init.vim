@@ -84,9 +84,12 @@ endfunction
 " Set vim-plug to be the package manager
 call plug#begin('~/.config/nvim/plugged')
 
+ " Fugitive
+ Plug 'tpope/vim-fugitive'
+ Plug 'vim-airline/vim-airline'
+
  " Git Gutter
  Plug 'airblade/vim-gitgutter'
-
  Plug 'scrooloose/nerdtree'
  Plug 'github/copilot.vim'
  Plug 'sheerun/vim-polyglot' 
@@ -591,3 +594,10 @@ let NERDTreeShowHidden=1
 nnoremap <C-p> <cmd>lua require('telescope.builtin').find_files()<cr>
 nnoremap <C-o> <cmd>lua require('telescope.builtin').buffers()<cr>
 nnoremap <C-f> <cmd>lua require('telescope.builtin').live_grep()<cr>
+
+" ----------------------------------------------------------
+"  Fugutive
+
+nmap <leader>gj :diffget //3<CR>
+nmap <leader>gf :diffget //2<CR>
+nmap <leader>gs :G<CR>
