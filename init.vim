@@ -84,6 +84,9 @@ endfunction
 " Set vim-plug to be the package manager
 call plug#begin('~/.config/nvim/plugged')
 
+ " Color scheme
+ Plug 'morhetz/gruvbox'
+
  " Fugitive
  Plug 'tpope/vim-fugitive'
  Plug 'vim-airline/vim-airline'
@@ -120,6 +123,8 @@ call plug#begin('~/.config/nvim/plugged')
 " Plug 'glacambre/firenvim', { 'do': function('firenvim#install') }
 
 call plug#end()
+
+colorscheme gruvbox
 
 " Git Gutter
 
@@ -569,17 +574,6 @@ set statusline +=%7*\ %{(&fenc!=''?&fenc:&enc)}\[%{&ff}]\
 set statusline +=%8*\ %-3(%{FileSize()}%)                " File size
 set statusline +=%0*\ %3p%%\ \ %l:\ %3c\                " Rownumber/total (%)
 
-hi StatusLine ctermbg=black
-hi User1 ctermfg=007
-hi User2 ctermfg=008
-hi User3 ctermfg=008
-hi User4 ctermfg=008
-hi User5 ctermfg=008
-hi User7 ctermfg=008
-hi User8 ctermfg=008
-hi User9 ctermfg=007
-
-
 " ALE Settings
 " Load all plugins now.
 " Plugins need to be added to runtimepath before helptags can be generated.
@@ -588,7 +582,6 @@ packloadall
 " All messages and errors will be ignored.
 silent! helptags ALL
 inoremap <C-k> %>%<CR>
-highlight ALEWarning ctermbg=black
 let NERDTreeShowHidden=1
 
 nnoremap <C-p> <cmd>lua require('telescope.builtin').find_files()<cr>
