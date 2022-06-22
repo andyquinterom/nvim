@@ -1,7 +1,6 @@
 "------------------------------------
 " Preliminaries
 "------------------------------------
-let g:ale_set_signs = 1
 set signcolumn=yes:1
 set shell=/bin/zsh
 let g:python3_host_prog = "/usr/bin/python3"
@@ -13,9 +12,9 @@ filetype on
 set mouse=a
 set lbr
 set shortmess+=I
-set number! relativenumber!
+set number relativenumber
 set hlsearch
-" set guifont=Iosevka
+set guifont=Hasklug\ Nerd\ Font\ Mono:h12
 set guioptions=agim
 set guioptions-=e
 set expandtab
@@ -84,6 +83,13 @@ endfunction
 " Set vim-plug to be the package manager
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" Neovim Tree shitter
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/playground'
+Plug 'romgrk/nvim-treesitter-context'
+
  " Color scheme
  Plug 'morhetz/gruvbox'
 
@@ -94,24 +100,13 @@ call plug#begin('~/.config/nvim/plugged')
  " Git Gutter
  Plug 'airblade/vim-gitgutter'
  Plug 'scrooloose/nerdtree'
- Plug 'github/copilot.vim'
  Plug 'sheerun/vim-polyglot' 
  Plug 'vim-pandoc/vim-pandoc-syntax'
  Plug 'vim-pandoc/vim-pandoc'
  Plug 'vim-pandoc/vim-rmarkdown'
- Plug 'jalvesaq/NVim-R'
  Plug 'mllg/vim-devtools-plugin'
- Plug 'ncm2/ncm2'
  Plug 'roxma/nvim-yarp'
- Plug 'gaalcaras/ncm-R'
- Plug 'ncm2/ncm2-cssomni'
- Plug 'ncm2/ncm2-tern'
- Plug 'ncm2/ncm2-path'
- Plug 'ncm2/ncm2-pyclang'
- Plug 'ncm2/ncm2-jedi'
- Plug 'ncm2/ncm2-go'
  Plug 'junegunn/vim-easy-align'
- Plug 'w0rp/ale'
  Plug 'ryanoasis/vim-devicons'
 
  " telescope requirements...
@@ -121,6 +116,12 @@ call plug#begin('~/.config/nvim/plugged')
 
 " Vim in chrome and firefox
 " Plug 'glacambre/firenvim', { 'do': function('firenvim#install') }
+
+ 
+ " Debugging
+ Plug 'nvim-lua/plenary.nvim'
+ Plug 'mfussenegger/nvim-dap'
+ Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 
 call plug#end()
 
@@ -136,7 +137,10 @@ let g:gitgutter_map_keys = 0
 
 " NERD Tree
 map <leader>nn :NERDTreeToggle<CR>
-map <leader>tm :botright vsp term://zsh<CR>
+map <leader>tm :term<CR>
+
+" Easy reload
+nnoremap <leader>sv :source $MYVIMRC<CR>
 
 
 "------------------------------------
@@ -158,8 +162,8 @@ endif
 " ncm requirements
 " -------------------------------
 " enable ncm2 for all buffers
-autocmd BufEnter * call ncm2#enable_for_buffer()
-autocmd FileType TelescopePrompt  call ncm2#disable_for_buffer()
+" autocmd BufEnter * call ncm2#enable_for_buffer()
+" autocmd FileType TelescopePrompt  call ncm2#disable_for_buffer()
 
 " IMPORTANT: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
@@ -186,20 +190,20 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 " add 180ms delay before the omni wrapper:
 "  'on_complete': ['ncm2#on_complete#delay', 180,
 "               \ 'ncm2#on_complete#omni', 'csscomplete#CompleteCSS'],
-au User Ncm2Plugin call ncm2#register_source({
-        \ 'name' : 'css',
-        \ 'priority': 9, 
-        \ 'subscope_enable': 1,
-        \ 'scope': ['css','scss'],
-        \ 'mark': 'css',
-        \ 'word_pattern': '[\w\-]+',
-        \ 'complete_pattern': ':\s*',
-        \ 'on_complete': ['ncm2#on_complete#delay', 180,
-        \  'ncm2#on_complete#omni', 'csscomplete#CompleteCSS'],
-        \ })
+"au User Ncm2Plugin call ncm2#register_source({
+"        \ 'name' : 'css',
+"        \ 'priority': 9, 
+"        \ 'subscope_enable': 1,
+"        \ 'scope': ['css','scss'],
+"        \ 'mark': 'css',
+"        \ 'word_pattern': '[\w\-]+',
+"        \ 'complete_pattern': ':\s*',
+"        \ 'on_complete': ['ncm2#on_complete#delay', 180,
+"        \  'ncm2#on_complete#omni', 'csscomplete#CompleteCSS'],
+"        \ })
 
 " path to directory where libclang.so can be found
-let g:ncm2_pyclang#library_path = '/usr/lib/llvm-11/lib'
+" let g:ncm2_pyclang#library_path = '/usr/lib/llvm-11/lib'
 
 "------------------------------------
 " Fix syntax highlighting performance
@@ -234,15 +238,6 @@ let g:ncm2_pyclang#library_path = '/usr/lib/llvm-11/lib'
 "
 "let g:neomake_r_enabled_makers = ['lintr']
 "
-"------------------------------------
-" ALE Linter settings
-"------------------------------------
-let b:alelinters = ['lintr', 'eslint', 'hadolint', 'jq', 'sqlint', 'swaglint']
-let b:alefixers = ['lintr']
-"let g:ale_r_lintr_options = 'lintr::with_defaults(object_name_linter(style=c("lowerCamelCase", "dotted.case")'
-let g:ale_completion_enabled = 1
-let g:ale_sign_column_always = 1
-
 
 "------------------------------------
 " Deoplete Settings
@@ -574,14 +569,6 @@ set statusline +=%7*\ %{(&fenc!=''?&fenc:&enc)}\[%{&ff}]\
 set statusline +=%8*\ %-3(%{FileSize()}%)                " File size
 set statusline +=%0*\ %3p%%\ \ %l:\ %3c\                " Rownumber/total (%)
 
-" ALE Settings
-" Load all plugins now.
-" Plugins need to be added to runtimepath before helptags can be generated.
-packloadall
-" Load all of the helptags now, after plugins have been loaded.
-" All messages and errors will be ignored.
-silent! helptags ALL
-inoremap <C-k> %>%<CR>
 let NERDTreeShowHidden=1
 
 nnoremap <C-p> <cmd>lua require('telescope.builtin').find_files()<cr>
@@ -594,3 +581,26 @@ nnoremap <C-f> <cmd>lua require('telescope.builtin').live_grep()<cr>
 nmap <leader>gj :diffget //3<CR>
 nmap <leader>gf :diffget //2<CR>
 nmap <leader>gs :G<CR>
+
+set completeopt=menu,menuone,noselect
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
+
+autocmd FileType scss setl iskeyword+=@-@
+
+map <A-y> "+y<movement>
+map <A-p> "+p<movement>
+
+" Increases the font size with `amount`
+function! Zoom(amount) abort
+  call ZoomSet(matchstr(&guifont, '\d\+$') + a:amount)
+endfunc
+
+" Sets the font size to `font_size`
+function ZoomSet(font_size) abort
+  let &guifont = substitute(&guifont, '\d\+$', a:font_size, '')
+endfunc
+
+noremap <silent> <C-+> :call Zoom(v:count1)<CR>
+noremap <silent> <C--> :call Zoom(-v:count1)<CR>
+noremap <silent> <C-0> :call ZoomSet(11)<CR>
+
